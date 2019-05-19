@@ -53,6 +53,12 @@ public:
 
 	/*----------- GamePlay ----------*/
 	int stateFinal[3][3]; // stateFinal - hacia donde quiero llegar
+	int stateInicial[3][3]; // stateFinal - hacia donde quiero llegar
+	int posI, posJ;
+
+	float mapaX, mapaY;
+	float tamanoMapa;
+
 	std::vector <Camino> visitado; // guarda los nodos visitados
 	void imprimirMatriz(int matriz[3][3]); // imprime una matriz
 	long generarValor(int matriz[3][3]);  // genera el valor del costo
@@ -64,6 +70,8 @@ public:
 	Camino aAsterisco(std::vector<Camino> caminos);
 	bool estaVisitado(Camino camino);
 	bool esOK(int x, int y);
+
+	void solucionar();
 
 };
 

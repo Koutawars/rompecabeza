@@ -31,13 +31,27 @@ void Game::initialize() {
 				this->stateFinal[i][j] = stateFinal[i][j];
 			}
 		}
-		std::vector<Camino> caminos = std::vector<Camino>();
-		int mapaInicial[3][3];
-		mapaAleatorio(mapaInicial); // se genera mapa aleatorio
+		mapaAleatorio(this->stateInicial); // se genera mapa aleatorio
 
-		caminos.push_back(Camino(mapaInicial, generarValor(mapaInicial))); // se crea el primer camino y se coloca en la matriz de caminos
-		imprimirMatriz(mapaInicial);
+		for (int i = 0; i < 3; i ++) {
+			for (int j = 0; j < 3; j++) {
+				if (this->stateInicial[i][j] == 0) {
+					this->posI = i;
+					this->posJ = j;
+				}
+			}
+		}
+
+		mapaX = 20, mapaY = 20;
+		tamanoMapa = 400;
+
+		/*
+		caminos.clear();
+		caminos.push_back(Camino(this->stateInicial, generarValor(this->stateInicial))); // se crea el primer camino y se coloca en la matriz de caminos
+		imprimirMatriz(this->stateInicial);
 		aAsterisco(caminos).imprimir();
+
+		*/
 		break;
 	}
 
@@ -52,10 +66,26 @@ void Game::loadContent() {
 		menu.push_back("Detalles");
 		menu.push_back("Salir");
 		break;
+	case GAMEPLAY:
+
+		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
+		break;
 	}
 
 	this->dibujar = true;
 }
+void Game::solucionar() {
+	copiarMapa(this->stateFinal, this->stateInicial);
+	posI = 2, posJ = 2;
+	/*
+	std::vector<Camino> caminos = std::vector<Camino>();
+	caminos.push_back(Camino(this->stateInicial, generarValor(this->stateInicial))); // se crea el primer camino y se coloca en la matriz de caminos
+	imprimirMatriz(this->stateInicial);
+	aAsterisco(caminos).imprimir();
+	*/
+}
+
+
 
 void Game::update(ALLEGRO_EVENT ev, bool *done) {
 	switch (pantalla) {
@@ -100,6 +130,45 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			}
 		}
 		break;
+	case GAMEPLAY:
+		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+			switch (ev.keyboard.keycode) {
+
+			case ALLEGRO_KEY_H:
+				solucionar();
+				dibujar = true;
+				break;
+			case ALLEGRO_KEY_UP:
+				if (esOK(posI - 1, posJ)) {
+					intercambiar(this->stateInicial, posI - 1, posJ, posI, posJ);
+					posI = posI - 1;
+					dibujar = true;
+				}
+				break;
+			case ALLEGRO_KEY_DOWN:
+				if (esOK(posI + 1, posJ)) {
+					intercambiar(this->stateInicial, posI + 1, posJ, posI, posJ);
+					posI = posI + 1;
+					dibujar = true;
+				}
+				break;
+			case ALLEGRO_KEY_LEFT:
+				if (esOK(posI, posJ - 1)) {
+					intercambiar(this->stateInicial, posI, posJ - 1, posI, posJ);
+					posJ = posJ - 1;
+					dibujar = true;
+				}
+				break;
+			case ALLEGRO_KEY_RIGHT:
+				if (esOK(posI, posJ + 1)) {
+					intercambiar(this->stateInicial, posI, posJ + 1, posI, posJ);
+					posJ = posJ + 1;
+					dibujar = true;
+				}
+				break;
+			}
+		}
+		break;
 	}
 }
 
@@ -115,6 +184,15 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 			}
 		}
 		break;
+	case GAMEPLAY:
+		imprimirMatriz(this->stateInicial);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				al_draw_filled_rectangle((mapaX + j*(tamanoMapa/3)), (mapaY + i * (tamanoMapa / 3)), (mapaX + j * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, (mapaY + i * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, al_map_rgb(200,200,200));
+				al_draw_textf(fuente, al_map_rgb(0, 0, 0), (mapaX + j * (tamanoMapa / 3)) + (tamanoMapa / 3)/2.5, (mapaY + i * (tamanoMapa / 3)) + (tamanoMapa / 3)/3, NULL, "%d", this->stateInicial[i][j]);
+			}
+		}
+		break;
 	}
 }
 
@@ -124,6 +202,10 @@ void Game::unloadContent() {
 		al_destroy_font(fuente);
 		menu.clear();
 		break;
+	case GAMEPLAY:
+		al_destroy_font(fuente);
+		break;
+
 	}
 }
 
@@ -151,7 +233,6 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 	Camino caminoAux;
 	copiarMapa(caminoMenor.mapa, mapa);
 	//Sleep(100);
-	caminoMenor.imprimir();
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			// encuentra el numero 0 en la matriz
