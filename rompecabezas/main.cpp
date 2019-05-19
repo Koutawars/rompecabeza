@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <iostream>
-
 #include "Game.h"
 
 int main()
@@ -27,6 +25,7 @@ int main()
 	al_init_font_addon();
 	al_init_ttf_addon();
 
+	Game::GetInstance().config();
 	Game::GetInstance().initialize();
 	Game::GetInstance().loadContent();
 
