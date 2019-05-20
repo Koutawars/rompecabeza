@@ -70,6 +70,10 @@ void Game::loadContent() {
 
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
 		break;
+	case ABOUT:
+
+		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
+		break;
 	}
 
 	this->dibujar = true;
@@ -131,6 +135,18 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 		}
 		break;
 	case GAMEPLAY:
+
+		if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+		{
+			if (ev.mouse.button & 1)
+			{
+				float mouseY = ev.mouse.y;
+				float mouseX = ev.mouse.x;
+				if (mouseX > 640 - 100 && mouseY < 80) {
+					cambiarPantalla(MENU);
+				}
+			}
+		}
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 
@@ -169,6 +185,19 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			}
 		}
 		break;
+	case ABOUT:
+		if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+		{
+			if (ev.mouse.button & 1)
+			{
+				float mouseY = ev.mouse.y;
+				float mouseX = ev.mouse.x;
+				if (mouseX > 640 - 100 && mouseY < 80) {
+					cambiarPantalla(MENU);
+				}
+			}
+		}
+		break;
 	}
 }
 
@@ -192,6 +221,10 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 				al_draw_textf(fuente, al_map_rgb(0, 0, 0), (mapaX + j * (tamanoMapa / 3)) + (tamanoMapa / 3)/2.5, (mapaY + i * (tamanoMapa / 3)) + (tamanoMapa / 3)/3, NULL, "%d", this->stateInicial[i][j]);
 			}
 		}
+		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
+		break;
+	case ABOUT:
+		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
 		break;
 	}
 }
@@ -205,7 +238,9 @@ void Game::unloadContent() {
 	case GAMEPLAY:
 		al_destroy_font(fuente);
 		break;
-
+	case ABOUT:
+		al_destroy_font(fuente);
+		break;
 	}
 }
 
