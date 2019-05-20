@@ -69,9 +69,12 @@ public:
 	void copiarMapa(int(*mapa)[3], int(*copia)[3]); // copia un mapa
 	Camino aAsterisco(std::vector<Camino> caminos);
 	bool estaVisitado(Camino camino);
-	bool esOK(int x, int y);
-
 	void solucionar();
+	Camino solucion;
+	bool esOK(int x, int y);
+	bool solucionando;
+	void solucionarMaq();
+	void movimientosMaq();
 
 };
 
