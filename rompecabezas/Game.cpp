@@ -51,6 +51,8 @@ void Game::initialize() {
 	}
 }
 
+
+
 void Game::loadContent() {
 	switch (pantalla) {
 	case MENU:
@@ -62,6 +64,7 @@ void Game::loadContent() {
 	case GAMEPLAY:
 
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
+		fuente2 = al_load_font("Ghiya Strokes Reg.ttf", 20, NULL);
 		break;
 	case ABOUT:
 
@@ -206,10 +209,40 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					break;
 				case ALLEGRO_KEY_R:
 					this->visitado.clear();
+					copiarMapa(stateFinal, stateInicial);
+					mapaAleatorio(stateInicial);
+					for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 3; j++) {
+							if (this->stateInicial[i][j] == 0) {
+								this->posI = i;
+								this->posJ = j;
+							}
+						}
+					}
 					solucionarMaq();
 					solucionando = true;
-
 					break;
+				case ALLEGRO_KEY_P:
+					this->visitado.clear();
+					copiarMapa(stateFinal, stateInicial);
+					mapaAleatorio(stateInicial);
+					for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 3; j++) {
+							if (this->stateInicial[i][j] == 0) {
+								this->posI = i;
+								this->posJ = j;
+							}
+						}
+					}
+					dibujar = true;
+					break;
+				}
+				if(generarValor(this->stateInicial) == 0){
+					gano = true;
+				}
+				else {
+					gano = false;
+
 				}
 			}
 		}
@@ -258,15 +291,17 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 		if (solucionando == true) {
 			al_rest(0.8);
 			if (solucion.moves.size() == 0){
-				if(generarValor(this->stateInicial) == 0) 
-					solucionando = false;
-				else {
-					solucionarMaq();
-					solucionando = true;
-				}
+				solucionando = false;
+				if (generarValor(this->stateInicial) == 0)
+					gano = true;
 			}
 		}
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
+		if(gano) al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 400, NULL, "Win");
+
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 100, NULL, "R > resolver");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 125, NULL, "P > mezclar");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 150, NULL, "flechas > mover");
 		break;
 	case ABOUT:
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
@@ -282,6 +317,7 @@ void Game::unloadContent() {
 		break;
 	case GAMEPLAY:
 		al_destroy_font(fuente);
+		al_destroy_font(fuente2);
 		break;
 	case ABOUT:
 		al_destroy_font(fuente);
@@ -292,7 +328,7 @@ void Game::unloadContent() {
 Camino Game::aAsterisco(std::vector<Camino> caminos) {
 	Camino menor = caminos[0];
 	int indice = 0;
-	for (int i = 0; i < caminos.size(); i++) {
+	for (size_t i = 0; i < caminos.size(); i++) {
 		if (caminos[i].valor < menor.valor) {
 			menor = caminos[i];
 			indice = i;
@@ -319,7 +355,7 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 	caminoMenor.imprimir();
 	copiarMapa(caminoMenor.mapa, mapa);
 	//Sleep(100);
-	if (caminoMenor.moves.size() < 50) {
+	if (caminoMenor.moves.size() < 100) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				// encuentra el numero 0 en la matriz
@@ -376,18 +412,19 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 
 	// busca el camino menor
 	caminoMenor = caminos[0];
-	for (int i = 0; i < caminos.size(); i++) {
+	for (size_t i = 0; i < caminos.size(); i++) {
 		if (caminos[i].valor < caminoMenor.valor) {
 			caminoMenor = caminos[i];
 		}
 	}
+
 	if (generarValor(caminoMenor.mapa) == 0) {
 		std::vector <Camino> retornar;
 		retornar.push_back(caminoMenor);
 		return retornar; 
 	}
 
-	for (int i = 0; i < caminos.size(); i++) {
+	for (size_t i = 0; i < caminos.size(); i++) {
 		if (caminoMenor.valor == caminos[i].valor) {
 			if (generarValor(caminos[i].mapa) == 0) {
 				std::vector <Camino> retornar;
@@ -396,13 +433,8 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 			}
 		}
 	}
-	if (caminos.size() > 400) {
-		Camino c = caminos[0], d = caminos[1];
-		c.moves.empty();
-		d.moves.empty();
-		caminos.clear();
-		caminos.push_back(d);
-		caminos.push_back(c);
+	if (caminos.size() > 1000) {
+		std::cout << caminos.size() << std::endl;
 	}
 
 	return caminos;

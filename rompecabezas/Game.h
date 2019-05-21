@@ -56,11 +56,13 @@ public:
 	int stateFinal[3][3]; // stateFinal - hacia donde quiero llegar
 	int stateInicial[3][3]; // stateFinal - hacia donde quiero llegar
 	int posI, posJ;
+	Camino solucion;
+	std::vector <Camino> visitado; // guarda los nodos visitados
 
 	float mapaX, mapaY;
 	float tamanoMapa;
+	bool gano = false;
 
-	std::vector <Camino> visitado; // guarda los nodos visitados
 	void imprimirMatriz(int matriz[3][3]); // imprime una matriz
 	long generarValor(int matriz[3][3]);  // genera el valor del costo
 	int getRandomInt(int max);  // generar numero aleatorio entero
@@ -71,11 +73,12 @@ public:
 	Camino aAsterisco(std::vector<Camino> caminos);
 	bool estaVisitado(Camino camino);
 	void solucionar();
-	Camino solucion;
 	bool esOK(int x, int y);
 	bool solucionando;
 	void solucionarMaq();
 	void movimientosMaq();
+
+	ALLEGRO_FONT *fuente2;
 
 };
 

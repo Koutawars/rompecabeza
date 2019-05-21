@@ -23,7 +23,7 @@ Camino::Camino(int mapa[3][3], long valor)
 }
 
 Camino::Camino(int mapa[3][3], long valor, std::vector<enum Move> moves) {
-
+	
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			this->mapa[i][j] = mapa[i][j];
@@ -42,6 +42,7 @@ Camino::~Camino()
 }
 
 void Camino::imprimir() {
+	/*
 	std::cout << "cccccc" << std::endl;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -56,5 +57,6 @@ void Camino::imprimir() {
 	for (long i = 0; i < moves.size(); i++) mov++;
 	std::cout << mov << std::endl;
 	std::cout << "cccccc" << std::endl;
+	*/
 
 }
