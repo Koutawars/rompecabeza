@@ -24,6 +24,9 @@ void Game::initialize() {
 		break;
 	case GAMEPLAY: 
 	{
+		numeroMovimientos = 0;
+		numeroMinimo = 0;
+		revolver = true;
 		this->solucionando = false;
 		this->visitado = std::vector<Camino>();
 		int stateFinal[3][3] = { {1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 0} };
@@ -45,13 +48,16 @@ void Game::initialize() {
 
 		mapaX = 20, mapaY = 20;
 		tamanoMapa = 400;
+		std::ifstream texto("puntoalto.txt");
+		while (!texto.eof()) {
+			texto >> numeroMinimo;
+		}
+		texto.close();
 		break;
 	}
 
 	}
 }
-
-
 
 void Game::loadContent() {
 	switch (pantalla) {
@@ -176,13 +182,17 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			switch (ev.keyboard.keycode) {
 
 				case ALLEGRO_KEY_H:
+					numeroMovimientos = 0;
 					solucionar();
+
+					revolver = false;
 					dibujar = true;
 					break;
 				case ALLEGRO_KEY_UP:
 					if (esOK(posI - 1, posJ)) {
 						intercambiar(this->stateInicial, posI - 1, posJ, posI, posJ);
 						posI = posI - 1;
+						if(revolver)numeroMovimientos++;
 						dibujar = true;
 					}
 					break;
@@ -190,6 +200,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					if (esOK(posI + 1, posJ)) {
 						intercambiar(this->stateInicial, posI + 1, posJ, posI, posJ);
 						posI = posI + 1;
+						if (revolver)numeroMovimientos++;
 						dibujar = true;
 					}
 					break;
@@ -197,6 +208,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					if (esOK(posI, posJ - 1)) {
 						intercambiar(this->stateInicial, posI, posJ - 1, posI, posJ);
 						posJ = posJ - 1;
+						if (revolver)numeroMovimientos++;
 						dibujar = true;
 					}
 					break;
@@ -204,6 +216,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					if (esOK(posI, posJ + 1)) {
 						intercambiar(this->stateInicial, posI, posJ + 1, posI, posJ);
 						posJ = posJ + 1;
+						if (revolver)numeroMovimientos++;
 						dibujar = true;
 					}
 					break;
@@ -211,6 +224,8 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					this->visitado.clear();
 					copiarMapa(stateFinal, stateInicial);
 					mapaAleatorio(stateInicial);
+					revolver = false;
+					numeroMovimientos = 0;
 					for (int i = 0; i < 3; i++) {
 						for (int j = 0; j < 3; j++) {
 							if (this->stateInicial[i][j] == 0) {
@@ -224,8 +239,11 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					break;
 				case ALLEGRO_KEY_P:
 					this->visitado.clear();
+					numeroMovimientos = 0;
 					copiarMapa(stateFinal, stateInicial);
 					mapaAleatorio(stateInicial);
+
+					revolver = true;
 					for (int i = 0; i < 3; i++) {
 						for (int j = 0; j < 3; j++) {
 							if (this->stateInicial[i][j] == 0) {
@@ -297,11 +315,25 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 			}
 		}
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
-		if(gano) al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 400, NULL, "Win");
+		if (gano) {
+			al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 400, NULL, "Win");
+			if (numeroMinimo > numeroMovimientos && revolver == true) {
+				numeroMinimo = numeroMovimientos;
+				std::ofstream fs("puntoalto.txt");
+				fs << numeroMinimo;
 
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 100, NULL, "R > resolver");
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 125, NULL, "P > mezclar");
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 480, 150, NULL, "flechas > mover");
+				numeroMovimientos = 0;
+				revolver = false;
+				fs.close();
+			}
+		}
+
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 100, NULL, "R > resolver");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 125, NULL, "P > mezclar");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 150, NULL, "flechas > mover");
+		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 175, NULL, "record : %d", numeroMinimo);
+
+		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 200, NULL, "Movimientos hechos: %d", numeroMovimientos);
 		break;
 	case ABOUT:
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");

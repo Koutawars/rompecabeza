@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream> 
 #include <algorithm>
 
 #include <time.h>
@@ -58,6 +59,9 @@ public:
 	int posI, posJ;
 	Camino solucion;
 	std::vector <Camino> visitado; // guarda los nodos visitados
+	int numeroMovimientos = 0;
+	int numeroMinimo = 0;
+	bool revolver = true;
 
 	float mapaX, mapaY;
 	float tamanoMapa;
