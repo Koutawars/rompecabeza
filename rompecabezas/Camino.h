@@ -6,6 +6,7 @@
 class Camino
 {
 public:
+	Camino(int mapa[3][3]);
 	Camino(int mapa[3][3], long valor);
 	Camino(int mapa[3][3], long valor, std::vector<enum Move> moves);
 	Camino();

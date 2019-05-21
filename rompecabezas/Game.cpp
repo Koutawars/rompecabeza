@@ -45,14 +45,6 @@ void Game::initialize() {
 
 		mapaX = 20, mapaY = 20;
 		tamanoMapa = 400;
-
-		/*
-		caminos.clear();
-		caminos.push_back(Camino(this->stateInicial, generarValor(this->stateInicial))); // se crea el primer camino y se coloca en la matriz de caminos
-		imprimirMatriz(this->stateInicial);
-		aAsterisco(caminos).imprimir();
-
-		*/
 		break;
 	}
 
@@ -82,12 +74,6 @@ void Game::loadContent() {
 void Game::solucionar() {
 	copiarMapa(this->stateFinal, this->stateInicial);
 	posI = 2, posJ = 2;
-	/*
-	std::vector<Camino> caminos = std::vector<Camino>();
-	caminos.push_back(Camino(this->stateInicial, generarValor(this->stateInicial))); // se crea el primer camino y se coloca en la matriz de caminos
-	imprimirMatriz(this->stateInicial);
-	aAsterisco(caminos).imprimir();
-	*/
 }
 void Game::solucionarMaq() {
 	std::vector<Camino> caminos = std::vector<Camino>();
@@ -219,6 +205,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					}
 					break;
 				case ALLEGRO_KEY_R:
+					this->visitado.clear();
 					solucionarMaq();
 					solucionando = true;
 
@@ -270,8 +257,13 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 		}
 		if (solucionando == true) {
 			al_rest(0.8);
-			if (generarValor(this->stateInicial) == 0){
-				solucionando = false;
+			if (solucion.moves.size() == 0){
+				if(generarValor(this->stateInicial) == 0) 
+					solucionando = false;
+				else {
+					solucionarMaq();
+					solucionando = true;
+				}
 			}
 		}
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
@@ -306,13 +298,18 @@ Camino Game::aAsterisco(std::vector<Camino> caminos) {
 			indice = i;
 		}
 	}
-	caminos = expandir(caminos, menor, indice);
-	if (caminos.size() == 1) {
-		menor = caminos[0];
-		return menor;
+	if (generarValor(menor.mapa) != 0) {
+		caminos = expandir(caminos, menor, indice);
+		if (caminos.size() == 1) {
+			menor = caminos[0];
+			return menor;
+		}
+		else {
+			return aAsterisco(caminos);
+		}
 	}
 	else {
-		return aAsterisco(caminos);
+		return menor;
 	}
 }
 
@@ -322,57 +319,60 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 	caminoMenor.imprimir();
 	copiarMapa(caminoMenor.mapa, mapa);
 	//Sleep(100);
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			// encuentra el numero 0 en la matriz
-			if (mapa[i][j] == 0) {
-				// se expande en 4 direcciones
-				if (i - 1 != -1) {
-					copiarMapa(caminoMenor.mapa, mapaAux);
-					intercambiar(mapaAux, i - 1, j, i, j);
-					caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
-					if (!estaVisitado(caminoAux)) {
-						caminoAux.moves.push_back(ARRIBA);
-						caminoAux.valor += caminoAux.moves.size()*2;
-						caminos.push_back(caminoAux);
+	if (caminoMenor.moves.size() < 50) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				// encuentra el numero 0 en la matriz
+				if (mapa[i][j] == 0) {
+					// se expande en 4 direcciones
+					if (i - 1 != -1) {
+						copiarMapa(caminoMenor.mapa, mapaAux);
+						intercambiar(mapaAux, i - 1, j, i, j);
+						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
+						if (!estaVisitado(caminoAux)) {
+							caminoAux.moves.push_back(ARRIBA);
+							caminoAux.valor += caminoAux.moves.size();
+							caminos.push_back(caminoAux);
+						}
 					}
-				}
-				if (i + 1 != 3) {
-					copiarMapa(caminoMenor.mapa, mapaAux);
-					intercambiar(mapaAux, i + 1, j, i, j);
-					caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
-					if (!estaVisitado(caminoAux)) {
-						caminoAux.moves.push_back(ABAJO);
-						caminoAux.valor += caminoAux.moves.size()*2;
-						caminos.push_back(caminoAux);
+					if (i + 1 != 3) {
+						copiarMapa(caminoMenor.mapa, mapaAux);
+						intercambiar(mapaAux, i + 1, j, i, j);
+						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
+						if (!estaVisitado(caminoAux)) {
+							caminoAux.moves.push_back(ABAJO);
+							caminoAux.valor += caminoAux.moves.size();
+							caminos.push_back(caminoAux);
+						}
 					}
-				}
-				if (j - 1 != -1) {
-					copiarMapa(caminoMenor.mapa, mapaAux);
-					intercambiar(mapaAux, i, j - 1, i, j);
-					caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
-					if (!estaVisitado(caminoAux)) {
-						caminoAux.moves.push_back(IZQUIERDA);
-						caminoAux.valor += caminoAux.moves.size()*2;
-						caminos.push_back(caminoAux);
+					if (j - 1 != -1) {
+						copiarMapa(caminoMenor.mapa, mapaAux);
+						intercambiar(mapaAux, i, j - 1, i, j);
+						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
+						if (!estaVisitado(caminoAux)) {
+							caminoAux.moves.push_back(IZQUIERDA);
+							caminoAux.valor += caminoAux.moves.size();
+							caminos.push_back(caminoAux);
+						}
 					}
-				}
-				if (j + 1 != 3) {
-					copiarMapa(caminoMenor.mapa, mapaAux);
-					intercambiar(mapaAux, i, j + 1, i, j);
-					caminoAux = Camino(mapaAux, generarValor(mapaAux) + caminoMenor.valor, caminoMenor.moves);
-					if (!estaVisitado(caminoAux)) {
-						caminoAux.moves.push_back(DERECHA);
-						caminoAux.valor += caminoAux.moves.size()*2;
-						caminos.push_back(caminoAux);
+					if (j + 1 != 3) {
+						copiarMapa(caminoMenor.mapa, mapaAux);
+						intercambiar(mapaAux, i, j + 1, i, j);
+						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
+						if (!estaVisitado(caminoAux)) {
+							caminoAux.moves.push_back(DERECHA);
+							caminoAux.valor += caminoAux.moves.size();
+							caminos.push_back(caminoAux);
+						}
 					}
-				}
 
+				}
 			}
 		}
 	}
 	visitado.push_back(caminoMenor);
-	caminos.erase(caminos.begin() + indice); // borra el camino donde se expandio
+	std::vector <int> indices;
+	caminos.erase(caminos.begin() + indice);
 
 	// busca el camino menor
 	caminoMenor = caminos[0];
@@ -396,6 +396,15 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 			}
 		}
 	}
+	if (caminos.size() > 400) {
+		Camino c = caminos[0], d = caminos[1];
+		c.moves.empty();
+		d.moves.empty();
+		caminos.clear();
+		caminos.push_back(d);
+		caminos.push_back(c);
+	}
+
 	return caminos;
 }
 

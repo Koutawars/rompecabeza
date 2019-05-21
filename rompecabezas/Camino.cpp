@@ -1,7 +1,15 @@
 #include "pch.h"
 #include "Camino.h"
 
-
+Camino::Camino(int mapa[3][3]) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			this->mapa[i][j] = mapa[i][j];
+		}
+	}
+	this->valor = 0;
+	this->moves = std::vector<enum Move>();
+}
 
 Camino::Camino(int mapa[3][3], long valor)
 {
@@ -34,11 +42,11 @@ Camino::~Camino()
 }
 
 void Camino::imprimir() {
-
 	std::cout << "cccccc" << std::endl;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			std::cout << mapa[i][j] << " ";
+			int a = mapa[i][j];
+			std::cout << a << " ";
 		}
 		std::cout << std::endl;
 	}
