@@ -17,9 +17,9 @@ void Game::initialize() {
 	switch (pantalla) {
 	case MENU:
 		menu = std::vector<std::string>();
-		posXMenu = 30;
-		posYMenu = 145;
-		separador = 55;
+		posXMenu = 125;
+		posYMenu = 230;
+		separador = 180;
 		select = -1;
 		break;
 	case GAMEPLAY: 
@@ -130,9 +130,9 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 		{
 			if (ev.mouse.button & 1)
 			{
-				float mouseY = ev.mouse.y;
+				float mouseY = ev.mouse.x;
 				for (int i = 0; i < menu.size(); i++) {
-					int posicionTexto = separador * i + posYMenu;
+					int posicionTexto = (separador * i + posXMenu) - 30;
 					if (posicionTexto < mouseY && posicionTexto + separador > mouseY) {
 						switch (i) {
 						case 0:
@@ -150,10 +150,10 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			}
 		}
 		if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {
-			float mouseY = ev.mouse.y;
+			float mouseY = ev.mouse.x;
 			bool encontrado = false;
 			for (int i = 0; i < menu.size(); i++) {
-				int posicionTexto = separador * i + posYMenu;
+				int posicionTexto = (separador * i + posXMenu)-30;
 				if (posicionTexto < mouseY && posicionTexto + separador > mouseY) {
 					select = i;
 					dibujar = true;
@@ -222,7 +222,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 						dibujar = true;
 					}
 					break;
-				case ALLEGRO_KEY_R:
+				case ALLEGRO_KEY_L:
 					this->visitado.clear();
 					copiarMapa(stateFinal, stateInicial);
 					mapaAleatorio(stateInicial);
@@ -239,7 +239,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					solucionarMaq();
 					solucionando = true;
 					break;
-				case ALLEGRO_KEY_P:
+				case ALLEGRO_KEY_M:
 					this->visitado.clear();
 					numeroMovimientos = 0;
 					copiarMapa(stateFinal, stateInicial);
@@ -293,10 +293,10 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 	case MENU:
 		for (int i = 0; i < menu.size(); i++) {
 			if (select == i) {
-				al_draw_text(fuente, al_map_rgb(219, 48, 48), posXMenu, (i * separador) + posYMenu, NULL, menu[i].c_str());
+				al_draw_text(fuente, al_map_rgb(219, 48, 48), posXMenu+ (i * separador) ,posYMenu, NULL, menu[i].c_str());
 			}
 			else {
-				al_draw_text(fuente, al_map_rgb(255, 255, 255), posXMenu, (i * separador) + posYMenu, NULL, menu[i].c_str());
+				al_draw_text(fuente, al_map_rgb(255, 255, 255), posXMenu+(i * separador) ,posYMenu, NULL, menu[i].c_str());
 			}
 		}
 		break;
@@ -346,10 +346,10 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 			}
 		}
 
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 100, NULL, "R > resolver");
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 125, NULL, "P > mezclar");
-		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 150, NULL, "flechas > mover");
-		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 175, NULL, "record : %d", numeroMinimo);
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 100, NULL, "L = Completar");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 125, NULL, "M = Mezclar");
+		al_draw_text(fuente2, al_map_rgb(255, 255, 255), 440, 150, NULL, "flechas = mover");
+		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 175, NULL, "record = %d", numeroMinimo);
 
 		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 200, NULL, "Movimientos hechos: %d", numeroMovimientos);
 		break;
