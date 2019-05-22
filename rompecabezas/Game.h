@@ -62,6 +62,7 @@ public:
 	int numeroMovimientos = 0;
 	int numeroMinimo = 0;
 	bool revolver = true;
+	ALLEGRO_BITMAP *imagen;
 
 	float mapaX, mapaY;
 	float tamanoMapa;

@@ -30,6 +30,7 @@ void Game::initialize() {
 		this->solucionando = false;
 		this->visitado = std::vector<Camino>();
 		int stateFinal[3][3] = { {1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 0} };
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				this->stateFinal[i][j] = stateFinal[i][j];
@@ -71,6 +72,7 @@ void Game::loadContent() {
 
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
 		fuente2 = al_load_font("Ghiya Strokes Reg.ttf", 20, NULL);
+		imagen = al_load_bitmap("image.png");
 		break;
 	case ABOUT:
 
@@ -300,23 +302,39 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 		break;
 	case GAMEPLAY:
 		imprimirMatriz(this->stateInicial);
+		int calculo, calculo2, a;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				al_draw_filled_rectangle((mapaX + j*(tamanoMapa/3)), (mapaY + i * (tamanoMapa / 3)), (mapaX + j * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, (mapaY + i * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, al_map_rgb(200,200,200));
+				calculo = (int)((this->stateInicial[i][j] - 1) / 3);
+				calculo2 = (this->stateInicial[i][j] + 2) % 3;
+				std::cout << "pos: "<< this->stateInicial[i][j] << std::endl;
+				std::cout << " Y: " << calculo << " X: " << calculo2 << std::endl;
+				if (this->stateInicial[i][j] != 0) {
+					al_draw_bitmap_region(imagen, calculo2 * (tamanoMapa / 3), calculo * (tamanoMapa / 3), (tamanoMapa / 3), (tamanoMapa / 3), (mapaX + j * (tamanoMapa / 3)), (mapaY + i * (tamanoMapa / 3)), NULL);
+				}
+				else {
+					if(gano)al_draw_bitmap_region(imagen, 2 * (tamanoMapa / 3), 2 * (tamanoMapa / 3), (tamanoMapa / 3), (tamanoMapa / 3), (mapaX + j * (tamanoMapa / 3)), (mapaY + i * (tamanoMapa / 3)), NULL);
+				}
+
+				//al_draw_filled_rectangle((mapaX + j*(tamanoMapa/3)), (mapaY + i * (tamanoMapa / 3)), (mapaX + j * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, (mapaY + i * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, al_map_rgb(200,200,200));
 				al_draw_textf(fuente, al_map_rgb(0, 0, 0), (mapaX + j * (tamanoMapa / 3)) + (tamanoMapa / 3)/2.5, (mapaY + i * (tamanoMapa / 3)) + (tamanoMapa / 3)/3, NULL, "%d", this->stateInicial[i][j]);
 			}
 		}
+
 		if (solucionando == true) {
 			al_rest(0.8);
 			if (solucion.moves.size() == 0){
 				solucionando = false;
-				if (generarValor(this->stateInicial) == 0)
+				if (generarValor(this->stateInicial) == 0) {
+					al_draw_bitmap_region(imagen, 2 * (tamanoMapa / 3), 2 * (tamanoMapa / 3), (tamanoMapa / 3), (tamanoMapa / 3), (mapaX + 2 * (tamanoMapa / 3)), (mapaY + 2 * (tamanoMapa / 3)), NULL);
 					gano = true;
+				}
 			}
 		}
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
 		if (gano) {
 			al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 400, NULL, "Win");
+
 			if (numeroMinimo > numeroMovimientos && revolver == true) {
 				numeroMinimo = numeroMovimientos;
 				std::ofstream fs("puntoalto.txt");
@@ -350,6 +368,7 @@ void Game::unloadContent() {
 	case GAMEPLAY:
 		al_destroy_font(fuente);
 		al_destroy_font(fuente2);
+		al_destroy_bitmap(imagen);
 		break;
 	case ABOUT:
 		al_destroy_font(fuente);
