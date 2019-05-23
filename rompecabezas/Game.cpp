@@ -315,9 +315,8 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 				else {
 					if(gano)al_draw_bitmap_region(imagen, 2 * (tamanoMapa / 3), 2 * (tamanoMapa / 3), (tamanoMapa / 3), (tamanoMapa / 3), (mapaX + j * (tamanoMapa / 3)), (mapaY + i * (tamanoMapa / 3)), NULL);
 				}
-
 				//al_draw_filled_rectangle((mapaX + j*(tamanoMapa/3)), (mapaY + i * (tamanoMapa / 3)), (mapaX + j * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, (mapaY + i * (tamanoMapa / 3) + (tamanoMapa / 3)) - 3, al_map_rgb(200,200,200));
-				al_draw_textf(fuente, al_map_rgb(0, 0, 0), (mapaX + j * (tamanoMapa / 3)) + (tamanoMapa / 3)/2.5, (mapaY + i * (tamanoMapa / 3)) + (tamanoMapa / 3)/3, NULL, "%d", this->stateInicial[i][j]);
+				//al_draw_textf(fuente, al_map_rgb(0, 0, 0), (mapaX + j * (tamanoMapa / 3)) + (tamanoMapa / 3)/2.5, (mapaY + i * (tamanoMapa / 3)) + (tamanoMapa / 3)/3, NULL, "%d", this->stateInicial[i][j]);
 			}
 		}
 
