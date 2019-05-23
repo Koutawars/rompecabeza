@@ -8,7 +8,7 @@ Camino::Camino(int mapa[3][3]) {
 		}
 	}
 	this->valor = 0;
-	this->moves = std::vector<enum Move>();
+	this->moves = std::vector<int>();
 }
 
 Camino::Camino(int mapa[3][3], long valor)
@@ -19,10 +19,10 @@ Camino::Camino(int mapa[3][3], long valor)
 		}
 	}
 	this->valor = valor;
-	this->moves = std::vector<enum Move>();
+	this->moves = std::vector<int>();
 }
 
-Camino::Camino(int mapa[3][3], long valor, std::vector<enum Move> moves) {
+Camino::Camino(int mapa[3][3], long valor, std::vector<int> moves) {
 	
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -30,7 +30,7 @@ Camino::Camino(int mapa[3][3], long valor, std::vector<enum Move> moves) {
 		}
 	}
 	this->valor = valor;
-	this->moves = std::vector<enum Move>(moves);
+	this->moves = std::vector<int>(moves);
 }
 
 Camino::Camino()

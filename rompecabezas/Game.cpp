@@ -15,15 +15,16 @@ Game& Game::GetInstance()
 
 void Game::initialize() {
 	switch (pantalla) {
-	case MENU:
+	case 0:
 		menu = std::vector<std::string>();
 		posXMenu = 125;
 		posYMenu = 230;
 		separador = 180;
 		select = -1;
 		break;
-	case GAMEPLAY: 
+	case 1: 
 	{
+		gano = false;
 		numeroMovimientos = 0;
 		numeroMinimo = 0;
 		revolver = true;
@@ -62,19 +63,19 @@ void Game::initialize() {
 
 void Game::loadContent() {
 	switch (pantalla) {
-	case MENU:
+	case 0:
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
 		menu.push_back("Iniciar");
-		menu.push_back("Detalles");
+		menu.push_back("Info");
 		menu.push_back("Salir");
 		break;
-	case GAMEPLAY:
+	case 1:
 
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
 		fuente2 = al_load_font("Ghiya Strokes Reg.ttf", 20, NULL);
 		imagen = al_load_bitmap("image.png");
 		break;
-	case ABOUT:
+	case 2:
 
 		fuente = al_load_font("Ghiya Strokes Reg.ttf", 48, NULL);
 		break;
@@ -98,24 +99,24 @@ void Game::movimientosMaq() {
 	if (solucion.moves.size() > 0) {
 		switch (solucion.moves[0])
 		{
-		case ARRIBA:
+		case 0: // ARRIBA = 0
 			intercambiar(this->stateInicial, posI, posJ, posI - 1, posJ);
 			posI--;
 			solucion.moves.erase(solucion.moves.begin());
 			break;
-		case ABAJO:
+		case 1: // ABAJO == 1
 			intercambiar(this->stateInicial, posI, posJ, posI + 1, posJ);
 			posI++;
 			solucion.moves.erase(solucion.moves.begin());
 			break;
-		case IZQUIERDA:
-			intercambiar(this->stateInicial, posI, posJ, posI, posJ - 1);
-			posJ--;
-			solucion.moves.erase(solucion.moves.begin());
-			break;
-		case DERECHA:
+		case 2: // DERECHA = 2
 			intercambiar(this->stateInicial, posI, posJ, posI, posJ + 1);
 			posJ++;
+			solucion.moves.erase(solucion.moves.begin());
+			break;
+		case 3: // IZQUIERDA = 3
+			intercambiar(this->stateInicial, posI, posJ, posI, posJ - 1);
+			posJ--;
 			solucion.moves.erase(solucion.moves.begin());
 			break;
 		}
@@ -125,7 +126,7 @@ void Game::movimientosMaq() {
 
 void Game::update(ALLEGRO_EVENT ev, bool *done) {
 	switch (pantalla) {
-	case MENU:
+	case 0:
 		if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 		{
 			if (ev.mouse.button & 1)
@@ -136,10 +137,10 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					if (posicionTexto < mouseY && posicionTexto + separador > mouseY) {
 						switch (i) {
 						case 0:
-							cambiarPantalla(GAMEPLAY);
+							cambiarPantalla(1);
 							break;
 						case 1:
-							cambiarPantalla(ABOUT);
+							cambiarPantalla(2);
 							break;
 						case 2:
 							*done = true;
@@ -166,27 +167,25 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			}
 		}
 		break;
-	case GAMEPLAY:
+	case 1:
 		if (this->solucionando == false) {
 
-		if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
-		{
-			if (ev.mouse.button & 1)
+			if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 			{
-				float mouseY = ev.mouse.y;
-				float mouseX = ev.mouse.x;
-				if (mouseX > 640 - 100 && mouseY < 80) {
-					cambiarPantalla(MENU);
+				if (ev.mouse.button & 1)
+				{
+					float mouseY = ev.mouse.y;
+					float mouseX = ev.mouse.x;
+					if (mouseX > 640 - 100 && mouseY < 80) {
+						cambiarPantalla(0);
+					}
 				}
 			}
-		}
-		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-			switch (ev.keyboard.keycode) {
-
+			if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+				switch (ev.keyboard.keycode) {
 				case ALLEGRO_KEY_H:
 					numeroMovimientos = 0;
 					solucionar();
-
 					revolver = false;
 					dibujar = true;
 					break;
@@ -197,7 +196,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 						if(revolver)numeroMovimientos++;
 						dibujar = true;
 					}
-					break;
+				break;
 				case ALLEGRO_KEY_DOWN:
 					if (esOK(posI + 1, posJ)) {
 						intercambiar(this->stateInicial, posI + 1, posJ, posI, posJ);
@@ -205,7 +204,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 						if (revolver)numeroMovimientos++;
 						dibujar = true;
 					}
-					break;
+				break;
 				case ALLEGRO_KEY_LEFT:
 					if (esOK(posI, posJ - 1)) {
 						intercambiar(this->stateInicial, posI, posJ - 1, posI, posJ);
@@ -244,7 +243,6 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 					numeroMovimientos = 0;
 					copiarMapa(stateFinal, stateInicial);
 					mapaAleatorio(stateInicial);
-
 					revolver = true;
 					for (int i = 0; i < 3; i++) {
 						for (int j = 0; j < 3; j++) {
@@ -270,9 +268,8 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 			movimientosMaq();
 			dibujar = true;
 		}
-
 		break;
-	case ABOUT:
+	case 2:
 		if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 		{
 			if (ev.mouse.button & 1)
@@ -280,7 +277,7 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 				float mouseY = ev.mouse.y;
 				float mouseX = ev.mouse.x;
 				if (mouseX > 640 - 100 && mouseY < 80) {
-					cambiarPantalla(MENU);
+					cambiarPantalla(0);
 				}
 			}
 		}
@@ -290,17 +287,12 @@ void Game::update(ALLEGRO_EVENT ev, bool *done) {
 
 void Game::draw(ALLEGRO_DISPLAY *display) {
 	switch (pantalla) {
-	case MENU:
+	case 0:
 		for (int i = 0; i < menu.size(); i++) {
-			if (select == i) {
-				al_draw_text(fuente, al_map_rgb(219, 48, 48), posXMenu+ (i * separador) ,posYMenu, NULL, menu[i].c_str());
-			}
-			else {
-				al_draw_text(fuente, al_map_rgb(255, 255, 255), posXMenu+(i * separador) ,posYMenu, NULL, menu[i].c_str());
-			}
+			al_draw_text(fuente, al_map_rgb(219, 48, 48), posXMenu+ (i * separador) ,posYMenu, NULL, menu[i].c_str());
 		}
 		break;
-	case GAMEPLAY:
+	case 1:
 		imprimirMatriz(this->stateInicial);
 		int calculo, calculo2, a;
 		for (int i = 0; i < 3; i++) {
@@ -351,8 +343,16 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 175, NULL, "record = %d", numeroMinimo);
 
 		al_draw_textf(fuente2, al_map_rgb(255, 255, 255), 440, 200, NULL, "Movimientos hechos: %d", numeroMovimientos);
+
+		if (gano) {
+			al_flip_display();
+			al_rest(2);
+			this->cambiarPantalla(0);
+			al_clear_to_color(al_map_rgb(0, 0, 0));
+			this->draw(display);
+		}
 		break;
-	case ABOUT:
+	case 2:
 		al_draw_text(fuente, al_map_rgb(255, 255, 255), 520, 0, NULL, "Atras");
 		break;
 	}
@@ -360,16 +360,16 @@ void Game::draw(ALLEGRO_DISPLAY *display) {
 
 void Game::unloadContent() {
 	switch (pantalla) {
-	case MENU:
+	case 0:
 		al_destroy_font(fuente);
 		menu.clear();
 		break;
-	case GAMEPLAY:
+	case 1:
 		al_destroy_font(fuente);
 		al_destroy_font(fuente2);
 		al_destroy_bitmap(imagen);
 		break;
-	case ABOUT:
+	case 2:
 		al_destroy_font(fuente);
 		break;
 	}
@@ -416,7 +416,7 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 						intercambiar(mapaAux, i - 1, j, i, j);
 						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
 						if (!estaVisitado(caminoAux)) {
-							caminoAux.moves.push_back(ARRIBA);
+							caminoAux.moves.push_back(0); // arriba
 							caminoAux.valor += caminoAux.moves.size();
 							caminos.push_back(caminoAux);
 						}
@@ -426,17 +426,7 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 						intercambiar(mapaAux, i + 1, j, i, j);
 						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
 						if (!estaVisitado(caminoAux)) {
-							caminoAux.moves.push_back(ABAJO);
-							caminoAux.valor += caminoAux.moves.size();
-							caminos.push_back(caminoAux);
-						}
-					}
-					if (j - 1 != -1) {
-						copiarMapa(caminoMenor.mapa, mapaAux);
-						intercambiar(mapaAux, i, j - 1, i, j);
-						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
-						if (!estaVisitado(caminoAux)) {
-							caminoAux.moves.push_back(IZQUIERDA);
+							caminoAux.moves.push_back(1); // abajo
 							caminoAux.valor += caminoAux.moves.size();
 							caminos.push_back(caminoAux);
 						}
@@ -446,7 +436,17 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 						intercambiar(mapaAux, i, j + 1, i, j);
 						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
 						if (!estaVisitado(caminoAux)) {
-							caminoAux.moves.push_back(DERECHA);
+							caminoAux.moves.push_back(2);// derecha
+							caminoAux.valor += caminoAux.moves.size();
+							caminos.push_back(caminoAux);
+						}
+					}
+					if (j - 1 != -1) {
+						copiarMapa(caminoMenor.mapa, mapaAux);
+						intercambiar(mapaAux, i, j - 1, i, j);
+						caminoAux = Camino(mapaAux, generarValor(mapaAux), caminoMenor.moves);
+						if (!estaVisitado(caminoAux)) {
+							caminoAux.moves.push_back(3); // izquierda
 							caminoAux.valor += caminoAux.moves.size();
 							caminos.push_back(caminoAux);
 						}
@@ -490,11 +490,12 @@ std::vector <Camino> Game::expandir(std::vector<Camino> caminos, Camino caminoMe
 	return caminos;
 }
 
-void Game::cambiarPantalla(screen pantalla) {
+void Game::cambiarPantalla(int pantalla) {
 	this->unloadContent();
 	this->pantalla = pantalla;
 	this->initialize();
 	this->loadContent();
+	dibujar = true;
 }
 
 void Game::imprimirMatriz(int matriz[3][3]) {

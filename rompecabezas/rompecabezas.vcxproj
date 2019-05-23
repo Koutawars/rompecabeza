@@ -177,7 +177,6 @@
   <ItemGroup>
     <ClInclude Include="Camino.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Move.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

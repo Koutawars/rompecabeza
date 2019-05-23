@@ -18,15 +18,8 @@
 #include <windows.h>
 #include <utility>
 
-#include "Move.h"
 #include "Camino.h"
 
-
-enum screen {
-	MENU,
-	GAMEPLAY,
-	ABOUT
-};
 
 class Game
 {
@@ -39,9 +32,9 @@ public:
 	void unloadContent();
 	void update(ALLEGRO_EVENT ev, bool *done);
 	void draw(ALLEGRO_DISPLAY *display);
-	screen pantalla = MENU;
+	int pantalla = 0;
 	bool dibujar;
-	void cambiarPantalla(screen pantalla);
+	void cambiarPantalla(int pantalla);
 	void config();
 
 	 /*----------- Menu ----------*/

@@ -1,5 +1,4 @@
 #pragma once
-#include "Move.h"
 #include <vector>
 #include <iostream>
 
@@ -8,9 +7,9 @@ class Camino
 public:
 	Camino(int mapa[3][3]);
 	Camino(int mapa[3][3], long valor);
-	Camino(int mapa[3][3], long valor, std::vector<enum Move> moves);
+	Camino(int mapa[3][3], long valor, std::vector<int> moves);
 	Camino();
-	std::vector<enum Move> moves;
+	std::vector<int> moves;
 	int mapa[3][3];
 	long valor;
 
