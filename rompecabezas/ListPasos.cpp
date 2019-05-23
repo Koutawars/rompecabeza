@@ -1,57 +1,57 @@
 #include "pch.h"
-#include "Camino.h"
+#include "ListPasos.h"
 
-Camino::Camino(int mapa[3][3]) {
+ListPasos::ListPasos(int map[3][3]) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			this->mapa[i][j] = mapa[i][j];
+			this->map[i][j] = map[i][j];
 		}
 	}
-	this->valor = 0;
+	this->largo = 0;
 	this->moves = std::vector<int>();
 }
 
-Camino::Camino(int mapa[3][3], long valor)
+ListPasos::ListPasos(int map[3][3], long largo)
 {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			this->mapa[i][j] = mapa[i][j];
+			this->map[i][j] = map[i][j];
 		}
 	}
-	this->valor = valor;
+	this->largo = largo;
 	this->moves = std::vector<int>();
 }
 
-Camino::Camino(int mapa[3][3], long valor, std::vector<int> moves) {
+ListPasos::ListPasos(int map[3][3], long largo, std::vector<int> moves) {
 	
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			this->mapa[i][j] = mapa[i][j];
+			this->map[i][j] = map[i][j];
 		}
 	}
-	this->valor = valor;
+	this->largo = largo;
 	this->moves = std::vector<int>(moves);
 }
 
-Camino::Camino()
+ListPasos::ListPasos()
 {
 }
 
-Camino::~Camino()
+ListPasos::~ListPasos()
 {
 }
 
-void Camino::imprimir() {
+void ListPasos::mostrar_pantalla() {
 	/*
 	std::cout << "cccccc" << std::endl;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			int a = mapa[i][j];
+			int a = map[i][j];
 			std::cout << a << " ";
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "valor: " << this->valor << std::endl;
+	std::cout << "largo: " << this->largo << std::endl;
 	std::cout << "Moves: ";
 	long mov = 0;
 	for (long i = 0; i < moves.size(); i++) mov++;
